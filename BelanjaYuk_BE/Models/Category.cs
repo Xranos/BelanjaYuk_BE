@@ -1,9 +1,7 @@
-﻿using BelanjakYuk_BE.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace BelanjakYuk_BE.Models
+namespace BelanjaYuk_BE.Models
 {
     [Table("LtCategory")]
     public class Category

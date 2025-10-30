@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BelanjakYuk_BE.Models
+namespace BelanjaYuk_BE.Models
 {
     [Table("TrBuyerTransactionDetail")]
     public class BuyerTransactionDetail
