@@ -1,5 +1,7 @@
 ﻿using BelanjaYuk_BE.Data;
+using BelanjaYuk_BE.Models;
 using BelanjaYuk_BE.Models.Requests;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,10 +13,13 @@ namespace BelanjaYuk_BE.Controllers
     public class UserController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IPasswordHasher<User> _hasher;
 
-        public UserController(AppDbContext appDbContext)
+
+        public UserController(AppDbContext appDbContext, IPasswordHasher<User> hasher)
         {
             _context = appDbContext;
+            _hasher = hasher;
         }
 
         private async Task<string> GenerateIdUserAsync()
@@ -62,7 +67,7 @@ namespace BelanjaYuk_BE.Controllers
             return $"HADDR{nextNumber:000}";
         }
 
-        [HttpPost]
+        [HttpPost("register user")]
         public async Task<IActionResult> PostAsync([FromBody]CreateUserRequest createUserRequest)
         {
             if (!ModelState.IsValid)
@@ -95,14 +100,27 @@ namespace BelanjaYuk_BE.Controllers
             };
             _context.Users.Add(user);
 
-            _context.UserPasswords.Add(new Models.UserPassword
+            //_context.UserPasswords.Add(new Models.UserPassword
+            //{
+            //    IdUserPassword = await GenerateIdUserPasswordAsync(),
+            //    IdUser = user.IdUser,
+            //    PasswordHashed = $"hashed_{createUserRequest.UserName}",
+            //    IsActive = true,
+            //    DateIn = DateTime.UtcNow
+            //});
+
+            var hashed = _hasher.HashPassword(user, createUserRequest.Password);
+
+            _context.UserPasswords.Add(new UserPassword
             {
                 IdUserPassword = await GenerateIdUserPasswordAsync(),
                 IdUser = user.IdUser,
-                PasswordHashed = $"hashed_{createUserRequest.UserName}",
+                PasswordHashed = hashed,
                 IsActive = true,
                 DateIn = DateTime.UtcNow
             });
+
+
 
             if (!string.IsNullOrWhiteSpace(createUserRequest.HomeAddressDesc))
             {
